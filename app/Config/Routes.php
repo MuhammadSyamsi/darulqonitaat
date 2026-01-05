@@ -21,12 +21,13 @@ $routes->get('/', 'Home::index');
 $routes->group('darulqonitaat', static function ($routes) {
 
     // Website publik
-    $routes->get('/', 'Home::website');
-    $routes->get('info', 'Home::portalInfo');
+    $routes->get('/', 'Home::landing');
+    $routes->get('pengembangan', 'Home::pengembangan');
+    $routes->get('psb', 'Home::psb');
 
     // Auth manual (opsional jika Shield dipakai penuh)
     $routes->get('login', 'Auth::login');
-    $routes->get('logout', 'Auth::logout');
+    // $routes->get('logout', 'Auth::logout');
     $routes->get('register', 'Auth::register');
 });
 
@@ -37,10 +38,10 @@ $routes->group('darulqonitaat', static function ($routes) {
 */
 $routes->group(
     'darulqonitaat/admin',
-    ['filter' => 'auth,role:admin'],
+    // ['filter' => 'auth,role:admin'],
     static function ($routes) {
 
-        $routes->get('/', 'Admin::index');
+        $routes->get('/', 'Dashboard::index');
         $routes->get('register', 'Admin::register');
         $routes->get('custom', 'Admin::custom');
         $routes->get('delete', 'Admin::delet');
