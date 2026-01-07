@@ -1,4 +1,4 @@
-<?= $this->extend('layout') ?>
+<?= $this->extend('layout/app') ?>
 <?= $this->section('content') ?>
 
 <div x-data="{ navOpen:false, menu:'santri', tab:'chat' }" class="h-screen flex flex-col lg:hidden">
@@ -13,7 +13,8 @@
     <!-- Content -->
     <main class="flex-1 overflow-y-auto pb-16">
         <template x-if="menu==='santri'">
-            <?= view('santri') ?>
+            <? //= view('santri') 
+            ?>
         </template>
     </main>
 

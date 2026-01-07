@@ -1,5 +1,3 @@
-<?php // layout.php 
-?>
 <!doctype html>
 <html lang="id">
 

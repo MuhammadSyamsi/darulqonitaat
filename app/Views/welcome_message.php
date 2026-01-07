@@ -639,7 +639,7 @@
             </div>
             <div class="hero-illustration">
                 <div class="illustration-box">
-                    <img src="/img/illustrasi.png" alt="Portfolio" class="w-full h-auto object-cover">
+                    <img src="<?= base_url('assets/img/illustrasi.png'); ?>" alt="Ilustrasi" class="w-full h-auto object-cover">
                 </div>
             </div>
         </div>
@@ -726,7 +726,7 @@
             <div class="portfolio-grid">
                 <div class="portfolio-card">
                     <div class="portfolio-image">
-                        <img src="/img/portfolio1.png" alt="Portfolio" class="w-full h-auto object-cover">
+                        <img src="<?= base_url('assets/img/portofolio1.png'); ?>" alt="Portfolio 1" class="w-full h-auto object-cover">
                     </div>
                     <div class="portfolio-info">
                         <h3>Sistem Informasi Pemasukan</h3>
@@ -735,7 +735,7 @@
                 </div>
                 <div class="portfolio-card">
                     <div class="portfolio-image">
-                        <img src="/img/portfolio2.png" alt="Portfolio" class="w-full h-auto object-cover">
+                        <img src="<?= base_url('assets/img/portofolio2.png'); ?>" alt="Portfolio 2" class="w-full h-auto object-cover">
                     </div>
                     <div class="portfolio-info">
                         <h3>Sistem Data Santri</h3>
@@ -744,7 +744,7 @@
                 </div>
                 <div class="portfolio-card">
                     <div class="portfolio-image">
-                        <img src="/img/portfolio3.png" alt="Portfolio" class="w-full h-auto object-cover">
+                        <img src="<?= base_url('assets/img/portofolio3.png'); ?>" alt="Portfolio 3" class="w-full h-auto object-cover">
                     </div>
                     <div class="portfolio-info">
                         <h3>Sistem Data Guru</h3>
@@ -753,7 +753,7 @@
                 </div>
                 <div class="portfolio-card">
                     <div class="portfolio-image">
-                        <img src="/img/portfolio4.png" alt="Portfolio" class="w-full h-auto object-cover">
+                        <img src="<?= base_url('assets/img/Portfolio4.png'); ?>" alt="Portfolio 4" class="w-full h-auto object-cover">
                     </div>
                     <div class="portfolio-info">
                         <h3>Sistem Tunggakan</h3>
@@ -762,7 +762,7 @@
                 </div>
                 <div class="portfolio-card">
                     <div class="portfolio-image">
-                        <img src="/img/portfolio5.png" alt="Portfolio" class="w-full h-auto object-cover">
+                        <img src="<?= base_url('assets/img/Portfolio5.png'); ?>" alt="Portfolio 5" class="w-full h-auto object-cover">
                     </div>
                     <div class="portfolio-info">
                         <h3>Sistem Jadwal &amp; Absensi</h3>
@@ -771,7 +771,7 @@
                 </div>
                 <div class="portfolio-card">
                     <div class="portfolio-image">
-                        <img src="/img/portfolio6.png" alt="Portfolio" class="w-full h-auto object-cover">
+                        <img src="<?= base_url('assets/img/Portfolio6.png'); ?>" alt="Portfolio 6" class="w-full h-auto object-cover">
                     </div>
                     <div class="portfolio-info">
                         <h3>Media Pembelajaran</h3>
