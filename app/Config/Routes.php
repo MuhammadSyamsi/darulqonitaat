@@ -96,4 +96,10 @@ $routes->group(
 | SHIELD AUTH ROUTES
 |--------------------------------------------------------------------------
 */
+$routes->group('api', function ($routes) {
+    $routes->get('santri/suggest', 'Api\SantriApi::suggest');
+    $routes->post('santri/check', 'Api\SantriApi::check');
+});
+
+
 service('auth')->routes($routes);

@@ -5,54 +5,31 @@ namespace App\Controllers\Api;
 use App\Controllers\BaseController;
 use App\Models\SantriModel;
 
-class SantriApi extends BaseController
+class SanrtiApi extends BaseController
 {
-    protected $santriModel;
-
-    public function __construct()
+    public function suggest()
     {
-        $this->santriModel = new SantriModel();
-    }
+        $keyword = $this->request->getGet('q');
 
-    public function store()
-    {
-        $data = $this->request->getJSON(true);
-
-        $rules = [
-            'nama' => 'required|min_length[3]',
-            'nis'  => 'required|is_unique[santri.nis]',
-        ];
-
-        if (! $this->validateData($data, $rules)) {
-            return $this->response->setJSON([
-                'status' => false,
-                'errors' => $this->validator->getErrors()
-            ]);
+        if (!$keyword || strlen($keyword) < 2) {
+            return $this->response->setJSON([]);
         }
 
-        $this->santriModel->insert([
-            'nis' => $data['nis'],
-            'nama' => $data['nama'],
-            'alamat' => $data['alamat'] ?? null,
-            'wali' => $data['wali'] ?? null,
-        ]);
+        $model = new SantriModel();
 
-        return $this->response->setJSON([
-            'status' => true,
-            'message' => 'Santri berhasil ditambahkan'
-        ]);
+        return $this->response->setJSON(
+            $model->searchByName($keyword)
+        );
     }
 
-    public function validateBubble()
+    public function check()
     {
-        $step = $this->request->getPost('step');
+        $nama = trim($this->request->getPost('nama'));
+
+        $model = new SantriModel();
 
         return $this->response->setJSON([
-            'next_step' => match ($step) {
-                'nama' => 'nis',
-                'nis' => 'alamat',
-                default => 'done'
-            }
+            'valid' => $model->existsByName($nama)
         ]);
     }
 }
