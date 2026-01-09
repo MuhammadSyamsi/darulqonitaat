@@ -1,39 +1,41 @@
 <!-- HEADER SIDEBAR -->
 <div class="p-4 border-b">
   <h1 class="text-xl font-bold text-gray-800">
-    Chat System
+    Sistem Informasi
   </h1>
   <p class="text-sm text-gray-500">
-    Internal Communication
+    Darul Qonnitaat
   </p>
 </div>
 
 <!-- MENU -->
-<nav class="p-4 space-y-2">
+<div class="space-y-2 p-2">
 
-  <!-- MENU CHAT -->
-  <button
-    @click="menu='chat'"
-    :class="menu === 'chat'
-            ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-    class="w-full flex items-center gap-2 px-4 py-2 rounded transition">
-    <span>💬</span>
-    <span>Chat</span>
-  </button>
+  <!-- ITEM -->
+  <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+    <img src="https://i.pravatar.cc/50?img=5" class="w-10 h-10 rounded-full">
+    <div class="flex-1">
+      <p class="font-semibold text-sm">Ruang Data Santri</p>
+    </div>
+  </div>
 
-  <!-- MENU LAPORAN -->
-  <button
-    @click="menu='laporan'"
-    :class="menu === 'laporan'
-            ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-    class="w-full flex items-center gap-2 px-4 py-2 rounded transition">
-    <span>📊</span>
-    <span>Laporan</span>
-  </button>
+  <!-- ITEM -->
+  <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+    <img src="https://i.pravatar.cc/50?img=8" class="w-10 h-10 rounded-full">
+    <div class="flex-1">
+      <p class="font-semibold text-sm">Ruang Data Akademik</p>
+    </div>
+  </div>
 
-</nav>
+  <!-- ITEM -->
+  <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+    <img src="https://i.pravatar.cc/50?img=12" class="w-10 h-10 rounded-full">
+    <div class="flex-1">
+      <p class="font-semibold text-sm">Ruang Data Keuangan</p>
+    </div>
+  </div>
+
+</div>
 
 <!-- FOOTER SIDEBAR -->
 <div class="absolute bottom-0 w-64 p-4 border-t bg-white">

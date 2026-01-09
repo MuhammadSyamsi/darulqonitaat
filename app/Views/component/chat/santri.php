@@ -27,15 +27,26 @@
 
                 <!-- PILL MENU -->
                 <div class="flex gap-2 mt-3 text-xs">
+
+                    <!-- ADD -->
                     <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
                         ➕ Add
                     </button>
-                    <button class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-                        ✏️ Change
+
+                    <!-- TAMBAH TAG -->
+                    <button class="px-3 py-1 bg-green-100 text-green-700 rounded-full">
+                        🏷️ Tag
                     </button>
-                    <button class="px-3 py-1 bg-red-100 text-red-700 rounded-full">
-                        🗑 Delete
-                    </button>
+
+                    <?php if ($santri): ?>
+                        <button class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">
+                            ✏️ Change
+                        </button>
+                        <button class="px-3 py-1 bg-red-100 text-red-700 rounded-full">
+                            🗑 Delete
+                        </button>
+                    <?php endif; ?>
+
                 </div>
 
             </div>
@@ -89,7 +100,9 @@
             </template>
         </div>
 
-        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg">
+        <button
+            @click="sendMessage"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg">
             Kirim
         </button>
 
