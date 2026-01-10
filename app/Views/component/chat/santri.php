@@ -13,11 +13,13 @@
     </div>
 
     <!-- CHAT AREA -->
-    <div class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
+    <div
+        id="chat-body"
+        class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
 
+        <!-- PESAN AWAL (BOT) -->
         <div class="flex gap-2">
             <div class="bg-white px-4 py-2 rounded-lg shadow max-w-md">
-
                 <p class="text-sm text-gray-800">
                     <?= $santri
                         ? 'Belum ada data. Tambahkan data santri terlebih dahulu'
@@ -25,45 +27,22 @@
                     ?>
                 </p>
 
-                <!-- PILL MENU -->
-                <div class="flex gap-2 mt-3 text-xs">
-
-                    <!-- ADD -->
-                    <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
-                        ➕ Add
-                    </button>
-
-                    <!-- TAMBAH TAG -->
-                    <button class="px-3 py-1 bg-green-100 text-green-700 rounded-full">
-                        🏷️ Tag
-                    </button>
-
-                    <?php if ($santri): ?>
-                        <button class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-                            ✏️ Change
-                        </button>
-                        <button class="px-3 py-1 bg-red-100 text-red-700 rounded-full">
-                            🗑 Delete
-                        </button>
-                    <?php endif; ?>
-
-                </div>
-
             </div>
         </div>
 
+        <!-- CHAT LOOP -->
         <template x-for="msg in messages" :key="msg.id">
-            <div class="flex justify-end gap-2">
-                <div class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow max-w-md">
-                    <span x-text="msg.text"></span>
-                </div>
-            </div>
-        </template>
+            <div
+                :class="msg.from === 'user'
+                    ? 'flex justify-end gap-2'
+                    : 'flex gap-2'">
 
-        <template x-for="reply in replies" :key="reply.id">
-            <div class="flex gap-2">
-                <div class="bg-white px-4 py-2 rounded-lg shadow max-w-md">
-                    <span x-text="reply.text"></span>
+                <div
+                    :class="msg.from === 'user'
+                        ? 'bg-blue-500 text-white px-4 py-2 rounded-lg shadow max-w-md'
+                        : 'bg-white text-gray-800 px-4 py-2 rounded-lg shadow max-w-md'">
+
+                    <span x-text="msg.text"></span>
                 </div>
             </div>
         </template>
@@ -91,7 +70,7 @@
         <!-- SUGGEST -->
         <div
             x-show="suggestions.length"
-            class="absolute bottom-16 left-4 right-4 bg-white shadow rounded-lg divide-y">
+            class="absolute bottom-16 left-4 right-4 bg-white shadow rounded-lg divide-y z-40">
             <template x-for="item in suggestions" :key="item.nama">
                 <button
                     @click="selectSuggest(item.nama)"
@@ -110,17 +89,17 @@
         <div
             x-show="attachOpen"
             @click.outside="attachOpen=false"
-            class="absolute bottom-16 left-4 bg-white shadow-lg rounded-xl p-3 w-48 space-y-2">
-            <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded">
+            class="absolute z-50 bottom-16 left-4 bg-white shadow-lg rounded-xl p-3 w-52 space-y-2">
+
+            <button
+                @click="startAddSantri"
+                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded">
                 ➕ Tambah Santri
             </button>
 
-            <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded">
-                ✏️ Edit Santri
-            </button>
-
-            <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded text-red-600">
-                🗑 Hapus Santri
+            <button
+                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded text-indigo-600">
+                🏷️ Tambah Tag
             </button>
         </div>
 

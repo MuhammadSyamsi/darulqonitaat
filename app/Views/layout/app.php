@@ -84,40 +84,51 @@
             return {
                 input: '',
                 messages: [],
-                replies: [],
                 suggestions: [],
                 attachOpen: false,
                 id: 0,
 
-                fetchSuggest() {
-                    if (this.input.length < 2) {
-                        this.suggestions = [];
-                        return;
-                    }
-
-                    fetch(`/api/santri/suggest?q=${this.input}`)
-                        .then(res => res.json())
-                        .then(data => this.suggestions = data);
+                mode: null, // null | 'add-santri'
+                step: 0,
+                form: {
+                    nama: '',
+                    nis: '',
+                    asal_sekolah: '',
+                    wali: '',
+                    hp: ''
                 },
 
-                selectSuggest(nama) {
-                    this.input = nama;
-                    this.suggestions = [];
-                    this.sendMessage();
+                startAddSantri() {
+                    this.attachOpen = false;
+                    this.mode = 'add-santri';
+                    this.step = 1;
+
+                    this.messages.push({
+                        id: ++this.id,
+                        from: 'bot',
+                        text: 'Baik, kita tambah santri baru. Siapa nama santrinya?'
+                    });
                 },
 
                 sendMessage() {
                     if (!this.input.trim()) return;
-
                     const text = this.input.trim();
 
-                    // tampilkan pesan user
                     this.messages.push({
                         id: ++this.id,
-                        text: text
+                        from: 'user',
+                        text
                     });
 
-                    // cek nama santri via backend (simple rule)
+                    this.input = '';
+
+                    // MODE TAMBAH SANTRI
+                    if (this.mode === 'add-santri') {
+                        this.handleAddSantri(text);
+                        return;
+                    }
+
+                    // MODE NORMAL (cek santri)
                     fetch('/api/santri/check', {
                             method: 'POST',
                             headers: {
@@ -129,16 +140,69 @@
                         })
                         .then(res => res.json())
                         .then(res => {
-                            if (!res.valid) {
-                                this.replies.push({
-                                    id: ++this.id,
-                                    text: 'Masukkan nama lengkap santri'
-                                });
-                            }
+                            this.messages.push({
+                                id: ++this.id,
+                                from: 'bot',
+                                text: res.valid ?
+                                    'Santri ditemukan. Mau diedit?' : 'Nama santri tidak ditemukan'
+                            });
                         });
+                },
 
-                    this.input = '';
-                    this.suggestions = [];
+                handleAddSantri(text) {
+                    if (this.step === 1) {
+                        this.form.nama = text;
+                        this.step++;
+                        this.reply('Asal sekolah santri?');
+                    } else if (this.step === 2) {
+                        this.form.asal_sekolah = text;
+                        this.step++;
+                        this.reply('Nama wali santri?');
+                    } else if (this.step === 3) {
+                        this.form.wali = text;
+                        this.step++;
+                        this.reply('Nomor HP wali?');
+                    } else if (this.step === 4) {
+                        this.form.hp = text;
+                        this.submitSantri();
+                    }
+                },
+
+                reply(text) {
+                    this.messages.push({
+                        id: ++this.id,
+                        from: 'bot',
+                        text
+                    });
+                },
+
+                submitSantri() {
+                    fetch('/api/santri/store', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.form)
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            this.reply(
+                                res.success ?
+                                '✅ Santri berhasil ditambahkan' :
+                                '❌ Gagal menambahkan santri'
+                            );
+
+                            // reset
+                            this.mode = null;
+                            this.step = 0;
+                            this.form = {
+                                nama: '',
+                                nis: '',
+                                asal_sekolah: '',
+                                wali: '',
+                                hp: ''
+                            };
+                        });
                 }
             }
         }
