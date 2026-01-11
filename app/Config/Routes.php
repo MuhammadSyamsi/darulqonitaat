@@ -37,7 +37,7 @@ $routes->group('darulqonitaat', static function ($routes) {
 |--------------------------------------------------------------------------
 */
 $routes->group(
-    'darulqonitaat/admin',
+    'darulqonitaat/santri',
     // ['filter' => 'auth,role:admin'],
     static function ($routes) {
 
@@ -48,6 +48,17 @@ $routes->group(
     }
 );
 
+$routes->group(
+    'darulqonitaat/akademik',
+    // ['filter' => 'auth,role:admin'],
+    static function ($routes) {
+
+        $routes->get('/', 'Akademik::index');
+        $routes->get('register', 'Akademik::register');
+        $routes->get('custom', 'Akademik::custom');
+        $routes->get('delete', 'Akademik::delet');
+    }
+);
 /*
 |--------------------------------------------------------------------------
 | STAFF AREA
@@ -97,9 +108,14 @@ $routes->group(
 |--------------------------------------------------------------------------
 */
 $routes->group('api/santri', function ($routes) {
-    $routes->get('suggest', 'Api\SantriApi::suggest');
-    $routes->post('check', 'Api\SantriApi::check');
-    $routes->post('store', 'Api\SantriApi::store');
+    $routes->get('suggest', 'Api/SantriApi::suggest');
+    $routes->post('check', 'Api/SantriApi::check');
+    $routes->post('store', 'Api/SantriApi::store');
+});
+
+$routes->group('api/tag', function($routes) {
+    $routes->post('store', 'Api\TagApi::store');
+    $routes->get('', 'Api\TagApi::index');
 });
 
 

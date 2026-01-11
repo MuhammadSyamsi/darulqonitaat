@@ -2,16 +2,16 @@
 <?= $this->section('content') ?>
 
 <div
-    x-data="chatSantri()"
+    x-data="chatAkademik()"
     class="flex flex-col h-full bg-gray-100">
 
     <!-- ================= CHAT HEADER ================= -->
     <div class="bg-white border-b px-4 py-3">
         <h2 class="font-semibold text-gray-800 text-sm sm:text-base">
-            Ruang Data Santri
+            Ruang Data Akademik
         </h2>
         <p class="text-xs text-gray-500">
-            Tambah, cek, dan kelola data santri
+            Tambah, cek, dan kelola data akademik santri
         </p>
     </div>
 
@@ -23,8 +23,8 @@
         <!-- EMPTY STATE -->
         <template x-if="messages.length === 0">
             <div class="text-center text-gray-400 text-sm mt-10">
-                Ketik nama santri atau perintah seperti
-                <span class="font-medium text-gray-600">tambah santri</span>
+                Ketik perintah seperti
+                <span class="font-medium text-gray-600">tambah nilai</span>
             </div>
         </template>
 
@@ -42,6 +42,16 @@
                         : 'bg-white text-gray-800 rounded-bl-md'">
 
                     <span x-text="msg.text"></span>
+
+                    <!-- OPTIONAL: badge untuk jenis data akademik -->
+                    <template x-if="msg.type">
+                        <span
+                            class="ml-2 inline-block px-2 py-0.5 text-xs rounded-full
+                                   bg-gray-200 text-gray-700"
+                            x-text="msg.type">
+                        </span>
+                    </template>
+
                 </div>
             </div>
         </template>
@@ -74,29 +84,36 @@
                 x-transition
                 class="absolute bottom-full mb-2 left-0
                        bg-white border rounded-xl shadow-lg
-                       w-44 text-sm overflow-hidden z-10">
+                       w-48 text-sm overflow-hidden z-10">
 
                 <button
                     type="button"
-                    @click="startAddSantri(); open = false"
+                    @click="startAddNilai(); open = false"
                     class="w-full text-left px-4 py-2 hover:bg-gray-100">
-                    ➕ Tambah Santri
+                    ➕ Tambah Nilai
                 </button>
 
                 <button
                     type="button"
-                    @click="startAddTag(); open = false"
+                    @click="startAddMapel(); open = false"
                     class="w-full text-left px-4 py-2 hover:bg-gray-100">
-                    🏷️ Tambah Tag
+                    📚 Tambah Mata Pelajaran
+                </button>
+
+                <button
+                    type="button"
+                    @click="startAddKelas(); open = false"
+                    class="w-full text-left px-4 py-2 hover:bg-gray-100">
+                    🏫 Tambah Kelas
                 </button>
             </div>
         </div>
 
-        <!-- INPUT CHAT ala ChatGPT syar’i -->
+        <!-- INPUT CHAT ala ChatGPT -->
         <input
             x-model="input"
             type="text"
-            placeholder="Ketik pesan..."
+            placeholder="Ketik perintah akademik..."
             class="flex-1 rounded-full border border-gray-300
                    bg-gray-100 text-gray-800 px-4 py-3
                    shadow-sm focus:outline-none focus:ring-2

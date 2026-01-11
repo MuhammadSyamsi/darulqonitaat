@@ -100,102 +100,165 @@
 
 <!-- ================= CHAT LOGIC ================= -->
 <script>
-function chatSantri() {
-    return {
-        input: '',
-        messages: [],
-        id: 0,
+    const baseUrl = "<?= base_url() ?>";
 
-        mode: null,
-        step: 0,
+    function chatSantri() {
+        return {
+            // ===== STATE =====
+            input: '',
+            messages: [],
+            id: 0,
 
-        form: {
-            nama: '',
-            asal_sekolah: '',
-            wali: '',
-            hp: ''
-        },
+            // mode: null | 'add-santri' | 'add-tag'
+            mode: null,
+            step: 0,
 
-        sendMessage() {
-            if (!this.input.trim()) return
+            // form data
+            form: {
+                nama: '',
+                asal_sekolah: '',
+                wali: '',
+                hp: ''
+            },
 
-            const text = this.input.trim()
-            this.messages.push({ id: ++this.id, from: 'user', text })
-            this.input = ''
+            tagForm: {
+                name: ''
+            },
 
-            if (this.mode === 'add-santri') {
-                this.handleAddSantri(text)
-                return
+            // ===== AUTO SCROLL =====
+            scrollToBottom() {
+                this.$nextTick(() => {
+                    const el = this.$refs.chatBody;
+                    if (el) el.scrollTop = el.scrollHeight;
+                });
+            },
+
+            // ===== SEND MESSAGE =====
+            sendMessage() {
+                if (!this.input.trim()) return;
+
+                const text = this.input.trim();
+                this.messages.push({ id: ++this.id, from: 'user', text });
+                this.input = '';
+                this.scrollToBottom();
+
+                // MODE TAMBAH SANTRI
+                if (this.mode === 'add-santri') {
+                    this.handleAddSantri(text);
+                    return;
+                }
+
+                // MODE TAMBAH TAG
+                if (this.mode === 'add-tag') {
+                    this.handleAddTag(text);
+                    return;
+                }
+
+                // NORMAL CHECK SANTRI
+                fetch('${baseUrl}/api/santri/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nama: text })
+                })
+                .then(r => r.json())
+                .then(r => {
+                    this.reply(
+                        r.valid
+                            ? 'Santri ditemukan. Mau diedit?'
+                            : 'Nama santri tidak ditemukan'
+                    );
+                    this.scrollToBottom();
+                });
+            },
+
+            // ===== REPLY BOT =====
+            reply(text) {
+                this.messages.push({ id: ++this.id, from: 'bot', text });
+            },
+
+            // ===== RESET STATE =====
+            reset() {
+                this.mode = null;
+                this.step = 0;
+                this.form = { nama:'', asal_sekolah:'', wali:'', hp:'' };
+                this.tagForm = { name: '' };
+            },
+
+            // ================= ADD SANTRI =================
+            startAddSantri() {
+                this.mode = 'add-santri';
+                this.step = 1;
+                this.reply('Baik, kita tambah santri baru. Siapa nama santrinya?');
+                this.scrollToBottom();
+            },
+
+            handleAddSantri(text) {
+                if (this.step === 1) {
+                    this.form.nama = text;
+                    this.step++;
+                    this.reply('Asal sekolah santri?');
+                } else if (this.step === 2) {
+                    this.form.asal_sekolah = text;
+                    this.step++;
+                    this.reply('Nama wali santri?');
+                } else if (this.step === 3) {
+                    this.form.wali = text;
+                    this.step++;
+                    this.reply('Nomor HP wali?');
+                } else if (this.step === 4) {
+                    this.form.hp = text;
+                    this.submitSantri();
+                }
+                this.scrollToBottom();
+            },
+
+            submitSantri() {
+                fetch('${baseUrl}/api/santri/store', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.form)
+                })
+                .then(r => r.json())
+                .then(r => {
+                    this.reply(
+                        r.success
+                            ? `✅ Santri berhasil ditambahkan\n🆔 NIS: ${r.nis}`
+                            : '❌ Gagal menambahkan santri'
+                    );
+                    this.reset();
+                    this.scrollToBottom();
+                });
+            },
+
+            // ================= ADD TAG =================
+            startAddTag() {
+                this.mode = 'add-tag';
+                this.step = 1;
+                this.reply('Silakan ketik nama tag yang ingin ditambahkan.');
+                this.scrollToBottom();
+            },
+
+            handleAddTag(text) {
+                this.tagForm.name = text;
+
+                fetch('${baseUrl}/api/tag/store', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: this.tagForm.name })
+                })
+                .then(r => r.json())
+                .then(r => {
+                    this.reply(
+                        r.success
+                            ? `🏷️ Tag "${this.tagForm.name}" berhasil ditambahkan`
+                            : `❌ Gagal menambahkan tag`
+                    );
+                    this.reset();
+                    this.scrollToBottom();
+                });
             }
-
-            fetch('/api/santri/check', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nama: text })
-            })
-            .then(r => r.json())
-            .then(r => {
-                this.reply(
-                    r.valid
-                        ? 'Santri ditemukan. Mau diedit?'
-                        : 'Nama santri tidak ditemukan'
-                )
-            })
-        },
-
-        startAddSantri() {
-            this.mode = 'add-santri'
-            this.step = 1
-            this.reply('Baik, siapa nama santrinya?')
-        },
-
-        handleAddSantri(text) {
-            if (this.step === 1) {
-                this.form.nama = text
-                this.step++
-                this.reply('Asal sekolah santri?')
-            } else if (this.step === 2) {
-                this.form.asal_sekolah = text
-                this.step++
-                this.reply('Nama wali santri?')
-            } else if (this.step === 3) {
-                this.form.wali = text
-                this.step++
-                this.reply('Nomor HP wali?')
-            } else if (this.step === 4) {
-                this.form.hp = text
-                this.submitSantri()
-            }
-        },
-
-        submitSantri() {
-            fetch('/api/santri/store', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.form)
-            })
-            .then(r => r.json())
-            .then(r => {
-                this.reply(
-                    r.success
-                        ? '✅ Santri berhasil ditambahkan'
-                        : '❌ Gagal menambahkan santri'
-                )
-                this.reset()
-            })
-        },
-
-        reply(text) {
-            this.messages.push({ id: ++this.id, from: 'bot', text })
-        },
-
-        reset() {
-            this.mode = null
-            this.step = 0
-            this.form = { nama:'', asal_sekolah:'', wali:'', hp:'' }
         }
     }
-}
 </script>
 
 </body>
