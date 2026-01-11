@@ -5,7 +5,7 @@ namespace App\Controllers\Api;
 use App\Controllers\BaseController;
 use App\Models\SantriModel;
 
-class SanrtiApi extends BaseController
+class SantriApi extends BaseController
 {
     protected $santri;
 
@@ -18,7 +18,7 @@ class SanrtiApi extends BaseController
     {
         $data = $this->request->getJSON(true);
 
-        if ($data['nama']) {
+        if (empty($data['nama'])) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Nama wajib diisi'
@@ -28,7 +28,7 @@ class SanrtiApi extends BaseController
         $today = date('Y-m-d');
         $prefix = date('Ym'); // YYYYMM
 
-        // hitung santri yang dibuat hari ini
+        // Hitung santri yang dibuat hari ini
         $countToday = $this->santri
             ->where('DATE(created_at)', $today)
             ->countAllResults();
@@ -40,6 +40,9 @@ class SanrtiApi extends BaseController
             'nis'           => $nis,
             'nama'          => $data['nama'],
             'asal_sekolah'  => $data['asal_sekolah'] ?? null,
+            'tempat_lahir'  => $data['tempat_lahir'] ?? null,
+            'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+            'alamat'        => $data['alamat'] ?? null,
             'wali'          => $data['wali'] ?? null,
             'nomor_hp'      => $data['hp'] ?? null,
         ]);
@@ -67,12 +70,20 @@ class SanrtiApi extends BaseController
 
     public function check()
     {
-        $nama = trim($this->request->getPost('nama'));
+        $nama = trim($this->request->getJSON(true)['nama'] ?? $this->request->getPost('nama') ?? '');
 
-        $model = new SantriModel();
+        if (!$nama) {
+            return $this->response->setJSON(['valid' => false, 'message' => 'Nama kosong']);
+        }
+
+        $santri = $this->santri
+            ->where('nama', $nama)
+            ->orderBy('id', 'ASC')
+            ->first();
 
         return $this->response->setJSON([
-            'valid' => $model->existsByName($nama)
+            'valid' => !empty($santri),
+            'data'  => $santri
         ]);
     }
 }

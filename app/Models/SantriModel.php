@@ -31,7 +31,7 @@ class SantriModel extends Model
 
     public function searchByName(string $keyword, int $limit = 5): array
     {
-        return $this->select('nama')
+        return $this->select('id, nama')
             ->like('nama', $keyword)
             ->limit($limit)
             ->find();
