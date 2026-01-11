@@ -3,44 +3,43 @@
 
 <div
     x-data="chatSantri()"
-    class="flex flex-col h-full pb-16 md:pb-0">
+    class="flex flex-col h-full bg-gray-100">
 
-    <!-- HEADER -->
-    <div class="bg-white p-4 border-b">
-        <h2 class="font-semibold text-gray-800">
+    <!-- ================= CHAT HEADER ================= -->
+    <div class="bg-white border-b px-4 py-3">
+        <h2 class="font-semibold text-gray-800 text-sm sm:text-base">
             Ruang Data Santri
         </h2>
+        <p class="text-xs text-gray-500">
+            Tambah, cek, dan kelola data santri
+        </p>
     </div>
 
-    <!-- CHAT AREA -->
+    <!-- ================= CHAT BODY ================= -->
     <div
-        id="chat-body"
-        class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
+        x-ref="chatBody"
+        class="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-4 space-y-3">
 
-        <!-- PESAN AWAL (BOT) -->
-        <div class="flex gap-2">
-            <div class="bg-white px-4 py-2 rounded-lg shadow max-w-md">
-                <p class="text-sm text-gray-800">
-                    <?= $santri
-                        ? 'Belum ada data. Tambahkan data santri terlebih dahulu'
-                        : 'Mau apa hari ini?'
-                    ?>
-                </p>
-
+        <!-- EMPTY STATE -->
+        <template x-if="messages.length === 0">
+            <div class="text-center text-gray-400 text-sm mt-10">
+                Ketik nama santri atau perintah seperti
+                <span class="font-medium text-gray-600">tambah santri</span>
             </div>
-        </div>
+        </template>
 
         <!-- CHAT LOOP -->
         <template x-for="msg in messages" :key="msg.id">
             <div
-                :class="msg.from === 'user'
-                    ? 'flex justify-end gap-2'
-                    : 'flex gap-2'">
+                class="flex"
+                :class="msg.from === 'user' ? 'justify-end' : 'justify-start'">
 
                 <div
+                    class="rounded-2xl px-4 py-2 text-sm sm:text-base leading-relaxed shadow
+                           max-w-[85%] sm:max-w-[75%] md:max-w-[65%]"
                     :class="msg.from === 'user'
-                        ? 'bg-blue-500 text-white px-4 py-2 rounded-lg shadow max-w-md'
-                        : 'bg-white text-gray-800 px-4 py-2 rounded-lg shadow max-w-md'">
+                        ? 'bg-blue-600 text-white rounded-br-md'
+                        : 'bg-white text-gray-800 rounded-bl-md'">
 
                     <span x-text="msg.text"></span>
                 </div>
@@ -49,60 +48,37 @@
 
     </div>
 
-    <!-- INPUT -->
-    <div class="bg-white p-4 border-t flex items-center gap-2 relative">
+    <!-- ================= CHAT INPUT ================= -->
+    <div class="bg-white border-t px-3 sm:px-4 py-3">
+        <form
+            @submit.prevent="sendMessage"
+            class="flex items-end gap-2">
 
-        <!-- ATTACH ICON -->
-        <button
-            @click="attachOpen = !attachOpen"
-            class="text-gray-600 text-xl">
-            📎
-        </button>
-
-        <input
-            type="text"
-            x-model="input"
-            @input.debounce.300ms="fetchSuggest"
-            @keydown.enter.prevent="sendMessage"
-            placeholder="Ketik nama santri..."
-            class="w-full border rounded-lg px-4 py-2 focus:ring focus:outline-none">
-
-        <!-- SUGGEST -->
-        <div
-            x-show="suggestions.length"
-            class="absolute bottom-16 left-4 right-4 bg-white shadow rounded-lg divide-y z-40">
-            <template x-for="item in suggestions" :key="item.nama">
-                <button
-                    @click="selectSuggest(item.nama)"
-                    class="w-full text-left px-4 py-2 hover:bg-gray-100"
-                    x-text="item.nama"></button>
-            </template>
-        </div>
-
-        <button
-            @click="sendMessage"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg">
-            Kirim
-        </button>
-
-        <!-- POPUP ATTACH -->
-        <div
-            x-show="attachOpen"
-            @click.outside="attachOpen=false"
-            class="absolute z-50 bottom-16 left-4 bg-white shadow-lg rounded-xl p-3 w-52 space-y-2">
-
+            <!-- QUICK ACTION -->
             <button
+                type="button"
                 @click="startAddSantri"
-                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded">
-                ➕ Tambah Santri
+                class="text-xl px-2"
+                title="Tambah Santri">
+                ➕
             </button>
 
+            <!-- INPUT -->
+            <input
+                x-model="input"
+                type="text"
+                placeholder="Ketik pesan..."
+                class="flex-1 rounded-full border px-4 py-3 text-sm sm:text-base
+                       focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <!-- SEND -->
             <button
-                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded text-indigo-600">
-                🏷️ Tambah Tag
+                type="submit"
+                class="bg-blue-600 text-white rounded-full px-4 py-3
+                       text-sm sm:text-base active:scale-95 transition">
+                Kirim
             </button>
-        </div>
-
+        </form>
     </div>
 
 </div>
