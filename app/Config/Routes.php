@@ -12,14 +12,12 @@ use CodeIgniter\Router\RouteCollection;
 |--------------------------------------------------------------------------
 */
 $routes->get('/', 'Home::index');
-$routes->get('system/ping', 'System::ping');
-
 /*
 |--------------------------------------------------------------------------
 | DARUL QONITAAT - PUBLIC WEBSITE
 |--------------------------------------------------------------------------
 */
-$routes->group('darulqonitaat', static function ($routes) {
+$routes->group('dq', static function ($routes) {
 
     // Website publik
     $routes->get('/', 'Home::landing');
@@ -38,7 +36,7 @@ $routes->group('darulqonitaat', static function ($routes) {
 |--------------------------------------------------------------------------
 */
 $routes->group(
-    'darulqonitaat/santri',
+    'dq/santri',
     // ['filter' => 'auth,role:admin'],
     static function ($routes) {
 
@@ -50,7 +48,7 @@ $routes->group(
 );
 
 $routes->group(
-    'darulqonitaat/akademik',
+    'dq/akademik',
     // ['filter' => 'auth,role:admin'],
     static function ($routes) {
 
@@ -66,7 +64,7 @@ $routes->group(
 |--------------------------------------------------------------------------
 */
 $routes->group(
-    'darulqonitaat/staff',
+    'dq/staff',
     ['filter' => 'auth,role:staff'],
     static function ($routes) {
 
@@ -81,7 +79,7 @@ $routes->group(
 |--------------------------------------------------------------------------
 */
 $routes->group(
-    'darulqonitaat/guru',
+    'dq/guru',
     ['filter' => 'auth,role:guru'],
     static function ($routes) {
 
@@ -95,7 +93,7 @@ $routes->group(
 |--------------------------------------------------------------------------
 */
 $routes->group(
-    'darulqonitaat/psb',
+    'dq/psb',
     ['filter' => 'auth,role:psb'],
     static function ($routes) {
 
@@ -114,7 +112,7 @@ $routes->group('/api/santri', function ($routes) {
     $routes->post('store', 'Api\SantriApi::store');
 });
 
-$routes->group('darulqonitaat/api/tag', function ($routes) {
+$routes->group('dq/api/tag', function ($routes) {
     $routes->post('store', 'Api\TagApi::store');
     $routes->get('', 'Api\TagApi::index');
 });

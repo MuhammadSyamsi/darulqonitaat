@@ -12,16 +12,24 @@
         </p>
 
         <div class="flex items-center gap-2 text-sm">
-            <!-- BULLET -->
-            <span
-                id="server-indicator"
-                class="w-2.5 h-2.5 rounded-full bg-gray-400 animate-pulse">
-            </span>
+<div
+    x-data="serverPing()"
+    x-init="init()"
+    class="flex items-center gap-2 text-sm">
 
-            <!-- TEXT -->
-            <span id="server-status" class="text-gray-500 text-xs">
-                Mengecek koneksi...
-            </span>
+    <!-- BULLET -->
+    <span
+        class="w-2.5 h-2.5 rounded-full"
+        :class="dotClass">
+    </span>
+
+    <!-- TEXT -->
+    <span
+        x-text="label"
+        class="text-xs"
+        :class="textClass">
+    </span>
+</div>
         </div>
     </div>
 
@@ -118,35 +126,3 @@
     </div>
 
 </div>
-
-<script>
-    async function checkServerStatus() {
-        const indicator = document.getElementById('server-indicator');
-        const text = document.getElementById('server-status');
-
-        try {
-            const res = await fetch('/system/ping', {
-                cache: 'no-store'
-            });
-            const data = await res.json();
-
-            if (data.status === 'online') {
-                indicator.className = 'w-2.5 h-2.5 rounded-full bg-green-500';
-                text.textContent = 'Online';
-                text.className = 'text-green-600 text-xs';
-            } else {
-                throw new Error();
-            }
-        } catch (e) {
-            indicator.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
-            text.textContent = 'Offline';
-            text.className = 'text-red-600 text-xs';
-        }
-    }
-
-    // cek pertama
-    checkServerStatus();
-
-    // auto refresh tiap 30 detik
-    setInterval(checkServerStatus, 30000);
-</script>
