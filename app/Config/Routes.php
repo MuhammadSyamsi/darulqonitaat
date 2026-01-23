@@ -106,16 +106,13 @@ $routes->group(
 | SHIELD AUTH ROUTES
 |--------------------------------------------------------------------------
 */
-$routes->group('/api/santri', function ($routes) {
-    $routes->get('suggest', 'Api\SantriApi::suggest');
-    $routes->post('check', 'Api\SantriApi::check');
-    $routes->post('store', 'Api\SantriApi::store');
+$routes->group('api/santri', function ($routes) {
+    $routes->get('suggest', 'Api\Santri::suggest');
+    $routes->post('check', 'Api\Santri::check');
+    $routes->post('store', 'Api\Santri::store');
+    $routes->post('delete', 'Api\Santri::delete');
+    $routes->post('tag/add', 'Api\Santri::addTag');
+    $routes->post('tag/attach', 'Api\Santri::attachTag');
 });
-
-$routes->group('dq/api/tag', function ($routes) {
-    $routes->post('store', 'Api\TagApi::store');
-    $routes->get('', 'Api\TagApi::index');
-});
-
 
 service('auth')->routes($routes);

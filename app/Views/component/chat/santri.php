@@ -228,7 +228,8 @@
 <script>
 function chatSantri() {
     return {
-        /* ================= STATE UTAMA ================= */
+
+        /* ================= STATE ================= */
         input: '',
         messages: [],
         suggestions: [],
@@ -238,13 +239,12 @@ function chatSantri() {
         mode: null,          // null | add-santri
         step: 0,
 
-        activeSantri: null,  // santri terpilih
+        activeSantri: null,
         showActionPills: false,
 
         tagMode: false,
         showFinishPill: false,
 
-        /* ================= FORM ================= */
         form: {
             nama: '',
             asal_sekolah: '',
@@ -253,6 +253,15 @@ function chatSantri() {
             alamat: '',
             wali: '',
             nomor_hp: ''
+        },
+
+        /* ================= RESET ================= */
+        resetContext() {
+            this.mode = null;
+            this.step = 0;
+            this.tagMode = false;
+            this.showFinishPill = false;
+            this.showActionPills = false;
         },
 
         resetTagMode() {
@@ -271,32 +280,16 @@ function chatSantri() {
         },
 
         pushUser(text) {
-            this.messages.push({
-                id: ++this.id,
-                from: 'user',
-                text
-            });
+            this.messages.push({ id: ++this.id, from: 'user', text });
             this.scrollToBottom();
         },
 
         reply(text) {
-            this.messages.push({
-                id: ++this.id,
-                from: 'bot',
-                text
-            });
+            this.messages.push({ id: ++this.id, from: 'bot', text });
             this.scrollToBottom();
         },
 
-        resetContext() {
-            this.mode = null;
-            this.step = 0;
-            this.tagMode = false;
-            this.showFinishPill = false;
-            this.showActionPills = false;
-        },
-
-        /* ================= SEND MESSAGE ================= */
+        /* ================= MESSAGE FLOW ================= */
         sendMessage(text = null) {
             const msg = (text ?? this.input).trim();
             if (!msg) return;
@@ -305,15 +298,8 @@ function chatSantri() {
             this.input = '';
             this.suggestions = [];
 
-            if (this.tagMode) {
-                this.addTagToSantri(msg);
-                return;
-            }
-
-            if (this.mode === 'add-santri') {
-                this.handleAddSantri(msg);
-                return;
-            }
+            if (this.tagMode) return this.addTagToSantri(msg);
+            if (this.mode === 'add-santri') return this.handleAddSantri(msg);
 
             this.checkSantri(msg);
         },
@@ -335,7 +321,7 @@ function chatSantri() {
             this.sendMessage(nama);
         },
 
-        /* ================= CEK SANTRI ================= */
+        /* ================= SANTRI ================= */
         checkSantri(nama) {
             fetch('/api/santri/check', {
                 method: 'POST',
@@ -355,12 +341,11 @@ function chatSantri() {
             .catch(() => this.reply('❌ Terjadi kesalahan'));
         },
 
-        /* ================= ACTION PILLS ================= */
         lihatSantri() {
             const s = this.activeSantri;
             if (!s) return;
 
-            let t = `📄 Lihat detail data santri:\n\n`;
+            let t = `📄 Detail Santri:\n\n`;
             t += `Nama: ${s.nama}\n`;
             t += `Alamat: ${s.alamat}\n`;
             t += `Asal Sekolah: ${s.asal_sekolah}\n`;
@@ -369,7 +354,7 @@ function chatSantri() {
             t += `No HP: ${s.nomor_hp}\n`;
 
             if (s.tags?.length) {
-                t += `\n🏷️ Tag:\n- ` + s.tags.map(t => t.name).join('\n- ');
+                t += `\n🏷️ Tag:\n- ${s.tags.map(t => t.name).join('\n- ')}`;
             } else {
                 t += `\n🏷️ Tag: (belum ada)`;
             }
@@ -379,10 +364,7 @@ function chatSantri() {
 
         konfirmasiHapus() {
             if (!this.activeSantri) return;
-
-            if (!confirm(`Apakah yakin akan menghapus data ${this.activeSantri.nama}?`)) {
-                return;
-            }
+            if (!confirm(`Hapus ${this.activeSantri.nama}?`)) return;
 
             fetch('/api/santri/delete', {
                 method: 'POST',
@@ -391,16 +373,13 @@ function chatSantri() {
             })
             .then(r => r.json())
             .then(r => {
-                this.reply(
-                    r.success
-                        ? `🗑️ Data ${this.activeSantri.nama} berhasil dihapus`
-                        : `❌ Gagal menghapus data`
-                );
+                this.reply(r.success ? '🗑️ Data dihapus' : '❌ Gagal menghapus');
                 this.activeSantri = null;
                 this.showActionPills = false;
             });
         },
 
+        /* ================= TAG ================= */
         addTagToSantri(tag) {
             fetch('/api/santri/tag/add', {
                 method: 'POST',
@@ -418,33 +397,12 @@ function chatSantri() {
                     this.showFinishPill = true;
                 } else {
                     this.reply('❌ Gagal menambahkan tag');
-                    this.resetTagMode(); // ⬅️ KEMBALI KE AWAL
+                    this.resetTagMode();
                 }
             })
             .catch(() => {
                 this.reply('❌ Gagal menambahkan tag');
-                this.resetTagMode(); // ⬅️ KEMBALI KE AWAL
-            });
-        },
-
-        addTagToSantri(tag) {
-            fetch('/api/santri/tag/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    santri_id: this.activeSantri.id,
-                    tag
-                })
-            })
-            .then(r => r.json())
-            .then(r => {
-                if (r.success) {
-                    this.reply(`🏷️ Tag "${tag}" ditambahkan`);
-                    this.reply('Masukkan tag baru atau selesai');
-                    this.showFinishPill = true;
-                } else {
-                    this.reply('❌ Gagal menambahkan tag');
-                }
+                this.resetTagMode();
             });
         },
 
@@ -464,29 +422,26 @@ function chatSantri() {
                     this.showFinishPill = true;
                 } else {
                     this.reply('❌ Gagal menambahkan tag');
-                    this.resetTagMode(); // ⬅️ KEMBALI KE AWAL
+                    this.resetTagMode();
                 }
             })
             .catch(() => {
                 this.reply('❌ Gagal menambahkan tag');
-                this.resetTagMode(); // ⬅️ KEMBALI KE AWAL
+                this.resetTagMode();
             });
         },
 
         selesaiTambahTag() {
-            this.tagMode = false;
-            this.showFinishPill = false;
-            this.showActionPills = true;
-            this.availableTags = [];
+            this.resetTagMode();
             this.reply('✅ Penambahan tag selesai');
         },
 
-        /* ================= TAMBAH SANTRI ================= */
+        /* ================= ADD SANTRI ================= */
         startAddSantri() {
             this.resetContext();
             this.mode = 'add-santri';
             this.step = 1;
-            this.reply('Baik, kita tambah santri baru. Siapa nama santrinya?');
+            this.reply('Baik, kita tambah santri baru. Siapa namanya?');
         },
 
         handleAddSantri(text) {
@@ -514,11 +469,7 @@ function chatSantri() {
             })
             .then(r => r.json())
             .then(r => {
-                this.reply(
-                    r.success
-                        ? `✅ Santri berhasil ditambahkan\n🆔 NIS: ${r.nis}`
-                        : `❌ Gagal menambahkan santri`
-                );
+                this.reply(r.success ? '✅ Santri ditambahkan' : '❌ Gagal menambah santri');
                 this.resetContext();
             });
         }

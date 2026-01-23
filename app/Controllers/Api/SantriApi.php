@@ -4,16 +4,72 @@ namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
 use App\Models\SantriModel;
+use App\Models\TagModel;
+use App\Models\SantriTagModel;
 
-class SantriApi extends BaseController
+class Santri extends BaseController
 {
     protected $santri;
+    protected $tag;
+    protected $santriTag;
 
     public function __construct()
     {
-        $this->santri = new SantriModel();
+        $this->santri     = new SantriModel();
+        $this->tag        = new TagModel();
+        $this->santriTag  = new SantriTagModel();
     }
 
+    //  * SUGGEST NAMA SANTRI
+    public function suggest()
+    {
+        $keyword = $this->request->getGet('q');
+
+        if (!$keyword || strlen($keyword) < 2) {
+            return $this->response->setJSON([]);
+        }
+
+        $model = new SantriModel();
+
+        return $this->response->setJSON(
+            $model->searchByName($keyword)
+        );
+    }
+
+    //  * CEK SANTRI
+    public function check()
+    {
+        $nama = trim($this->request->getJSON(true)['nama'] ?? $this->request->getPost('nama') ?? '');
+
+        if (!$nama) {
+            return $this->response->setJSON(['valid' => false, 'message' => 'Nama kosong']);
+        }
+
+        $santri = $this->santri
+            ->where('nama', $nama)
+            ->orderBy('id', 'ASC')
+            ->first();
+
+        if (!$santri) {
+            return $this->response->setJSON(['valid' => false]);
+        }
+
+        // Ambil tag santri
+        $tags = $this->tag
+            ->select('tags.id, tags.name')
+            ->join('santri_tag', 'santri_tag.tag_id = tags.id')
+            ->where('santri_tag.santri_id', $santri['id'])
+            ->findAll();
+
+        $santri['tags'] = $tags;
+
+        return $this->response->setJSON([
+            'valid' => !empty($santri),
+            'data'  => $santri
+        ]);
+    }
+
+    //  * SIMPAN SANTRI BARU
     public function store()
     {
         $data = $this->request->getJSON(true);
@@ -53,37 +109,61 @@ class SantriApi extends BaseController
         ]);
     }
 
-    public function suggest()
+    //  * HAPUS SANTRI
+    public function delete()
     {
-        $keyword = $this->request->getGet('q');
+        $id = $this->request->getJSON()->id ?? null;
 
-        if (!$keyword || strlen($keyword) < 2) {
-            return $this->response->setJSON([]);
+        if (!$id) {
+            return $this->response->setJSON(['success' => false]);
         }
 
-        $model = new SantriModel();
+        $this->santri->delete($id);
+        $this->santriTag->where('santri_id', $id)->delete();
 
-        return $this->response->setJSON(
-            $model->searchByName($keyword)
-        );
+        return $this->response->setJSON(['success' => true]);
     }
 
-    public function check()
+    //  * TAMBAH TAG BARU + PASANG
+    public function addTag()
     {
-        $nama = trim($this->request->getJSON(true)['nama'] ?? $this->request->getPost('nama') ?? '');
+        $json = $this->request->getJSON();
 
-        if (!$nama) {
-            return $this->response->setJSON(['valid' => false, 'message' => 'Nama kosong']);
+        if (!$json->santri_id || !$json->tag) {
+            return $this->response->setJSON(['success' => false]);
         }
 
-        $santri = $this->santri
-            ->where('nama', $nama)
-            ->orderBy('id', 'ASC')
-            ->first();
+        // buat tag jika belum ada
+        $tag = $this->tag->where('name', $json->tag)->first();
 
-        return $this->response->setJSON([
-            'valid' => !empty($santri),
-            'data'  => $santri
+        if (!$tag) {
+            $tagId = $this->tag->insert(['name' => $json->tag]);
+        } else {
+            $tagId = $tag['id'];
+        }
+
+        $this->santriTag->insert([
+            'santri_id' => $json->santri_id,
+            'tag_id'    => $tagId
         ]);
+
+        return $this->response->setJSON(['success' => true]);
+    }
+
+    //  * PASANG TAG EXISTING
+    public function attachTag()
+    {
+        $json = $this->request->getJSON();
+
+        if (!$json->santri_id || !$json->tag_id) {
+            return $this->response->setJSON(['success' => false]);
+        }
+
+        $this->santriTag->insert([
+            'santri_id' => $json->santri_id,
+            'tag_id'    => $json->tag_id
+        ]);
+
+        return $this->response->setJSON(['success' => true]);
     }
 }

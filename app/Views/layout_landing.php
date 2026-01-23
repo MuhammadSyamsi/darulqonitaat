@@ -27,8 +27,8 @@
             <!-- Navbar Desktop -->
             <nav class="hidden md:flex space-x-6">
                 <a href="<?= base_url(); ?>" class="hover:text-emerald-600 transition">Profil</a>
-                <a href="<?= base_url('darulqonitaat/pengembangan'); ?>" class="hover:text-emerald-600 transition">Pengembangan</a>
-                <a href="<?= base_url('darulqonitaat/psb'); ?>" class="hover:text-emerald-600 transition">PSB</a>
+                <a href="<?= base_url('dq/pengembangan'); ?>" class="hover:text-emerald-600 transition">Pengembangan</a>
+                <a href="<?= base_url('dq/psb'); ?>" class="hover:text-emerald-600 transition">PSB</a>
             </nav>
 
             <!-- Mobile menu toggle -->
