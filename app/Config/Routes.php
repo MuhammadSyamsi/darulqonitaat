@@ -12,6 +12,7 @@ use CodeIgniter\Router\RouteCollection;
 |--------------------------------------------------------------------------
 */
 $routes->get('/', 'Home::index');
+$routes->get('/ulangan', 'Home::kuis');
 /*
 |--------------------------------------------------------------------------
 | DARUL QONITAAT - PUBLIC WEBSITE

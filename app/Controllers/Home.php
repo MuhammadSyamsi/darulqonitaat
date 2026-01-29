@@ -9,6 +9,11 @@ class Home extends BaseController
         return view('welcome_message');
     }
 
+    public function kuis()
+    {
+        return redirect()->to('https://qqquis.my.canva.site/dag-w447uru');
+    }
+
     public function landing(): string
     {
         return view('landing/index');
